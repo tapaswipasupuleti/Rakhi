@@ -29,8 +29,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     "192.168.10.42",
+    "rakhi-backend-m6wj.onrender.com",
 ]
-
 
 # Application definition
 
