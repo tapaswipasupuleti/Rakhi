@@ -1,7 +1,6 @@
 import axios from "axios";
 
-// Change this IP if your laptop's IP changes
-const BASE_URL = "http://192.168.10.42:8000";
+const BASE_URL = "https://rakhi-backend-m6wj.onrender.com";
 
 const api = axios.create({
   baseURL: `${BASE_URL}/api/`,
@@ -36,24 +35,32 @@ api.interceptors.response.use(
       try {
         const refresh = localStorage.getItem("refresh");
 
+        if (!refresh) {
+          throw new Error("No refresh token");
+        }
+
         const response = await axios.post(
           `${BASE_URL}/api/token/refresh/`,
           {
-            refresh,
+            refresh: refresh,
           }
         );
 
-        localStorage.setItem("access", response.data.access);
+        const newAccessToken = response.data.access;
 
-        originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
+        localStorage.setItem("access", newAccessToken);
+
+        originalRequest.headers.Authorization =
+          `Bearer ${newAccessToken}`;
 
         return api(originalRequest);
-
       } catch (err) {
         localStorage.removeItem("access");
         localStorage.removeItem("refresh");
 
         window.location.href = "/login";
+
+        return Promise.reject(err);
       }
     }
 
